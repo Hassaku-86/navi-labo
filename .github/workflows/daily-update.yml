@@ -1,0 +1,41 @@
+name: 商品一覧 自動更新
+
+on:
+  schedule:
+    # 毎日 JST 9:00 (UTC 0:00) に実行
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # GitHubの画面から手動実行も可能
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Node.js セットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 依存パッケージのインストール
+        run: npm ci
+
+      - name: ヤフオク商品一覧を取得して更新
+        run: node scripts/update-listings.mjs
+
+      - name: 変更があればコミット & プッシュ
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "GitHub Actions"
+          git add index.html
+          if git diff --staged --quiet; then
+            echo "変更なし。スキップします。"
+          else
+            git commit -m "chore: 商品一覧を自動更新 $(TZ='Asia/Tokyo' date +'%Y-%m-%d')"
+            git push
+          fi

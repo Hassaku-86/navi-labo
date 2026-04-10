@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navi-Labo｜ナビラボ — カーナビ専門店</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ─── Toyota Luxury Journey inspired palette ───────────────
+       Dark  : #151210  (warm near-black)
+       Nav   : #1c1916  (warm charcoal)
+       Gold  : #b09060  (earthy warm gold)
+       Light : #f0efed  (warm off-white)
+       Text  : #1a1814  (warm dark on light) / #fff on dark
+       Sub   : #6b6560  (muted warm grey)
+    ──────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --dark:    #151210;
+      --nav:     #1c1916;
+      --gold:    #b09060;
+      --gold-lt: #cdb07e;
+      --gold-dk: #8a6e42;
+      --gold-dim: rgba(176,144,96,.22);
+      --light:   #f0efed;
+      --light2:  #e8e6e2;
+      --cream:   #faf9f7;
+      --ink:     #1a1814;
+      --sub:     #6b6560;
+      --sub2:    rgba(26,24,20,.45);
+      --white:   #ffffff;
+      --serif:   'Cormorant Garamond', Georgia, serif;
+      --sans:    'Noto Sans JP', sans-serif;
+      --ease:    cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--light);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dim); }
+
+    /* ── REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .9s var(--ease), transform .9s var(--ease);
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .d1 { transition-delay: .1s; }
+    .d2 { transition-delay: .22s; }
+    .d3 { transition-delay: .34s; }
+    .d4 { transition-delay: .46s; }
+
+    /* ── UTILS ── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2.5rem; }
+    .eyebrow {
+      display: block;
+      font-size: .68rem;
+      font-weight: 400;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+    }
+    .gold-rule {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 2rem 0;
+    }
+    .gold-rule-left {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      max-width: 200px;
+      margin: 1.8rem 0;
+    }
+
+    /* ════════════════════════════════════════
+       NAV
+    ════════════════════════════════════════ */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 60px;
+      background: var(--nav);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem;
+      border-bottom: 1px solid rgba(176,144,96,.18);
+      transition: background .4s;
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-weight: 500;
+      letter-spacing: .2em;
+      color: var(--gold);
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+    .nav-logo em { font-style: normal; color: rgba(240,239,237,.45); font-size: .72em; letter-spacing: .08em; }
+    .nav-links {
+      display: flex; align-items: center; gap: 2rem; list-style: none;
+    }
+    .nav-links a {
+      font-size: .7rem; letter-spacing: .18em; text-transform: uppercase;
+      color: rgba(255,255,255,.55); text-decoration: none; transition: color .3s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-cta {
+      display: inline-block;
+      padding: .42rem 1.2rem;
+      border: 1px solid var(--gold);
+      color: var(--gold) !important;
+      font-size: .68rem !important;
+      letter-spacing: .16em !important;
+      transition: background .3s, color .3s !important;
+    }
+    .nav-cta:hover { background: var(--gold); color: var(--nav) !important; }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .nav-hamburger span { display: block; width: 22px; height: 1px; background: var(--white); }
+
+    /* ════════════════════════════════════════
+       HERO
+    ════════════════════════════════════════ */
+    #hero {
+      position: relative;
+      height: 100vh; min-height: 640px;
+      display: flex; align-items: flex-end;
+      overflow: hidden;
+      background: var(--dark);
+    }
+    .hero-photo {
+      position: absolute; inset: 0;
+      background-image: url('img/hero_bg.jpeg');
+      background-size: cover;
+      background-position: center 35%;
+      /* fallback gradient if image missing */
+      background-color: var(--dark);
+    }
+    .hero-photo::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(21,18,16,.25) 0%,
+        rgba(21,18,16,.15) 30%,
+        rgba(21,18,16,.55) 65%,
+        rgba(21,18,16,.92) 100%
+      );
+    }
+    .hero-inner {
+      position: relative; z-index: 2;
+      width: 100%;
+      padding: 0 2.5rem 5rem;
+      max-width: 900px;
+    }
+    .hero-label {
+      display: inline-block;
+      padding: .28rem .9rem;
+      border: 1px solid var(--gold);
+      font-size: .65rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.8rem;
+    }
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 7vw, 6rem);
+      font-weight: 300;
+      line-height: 1.12;
+      color: var(--white);
+      letter-spacing: .02em;
+      margin-bottom: 1.2rem;
+    }
+    .hero-title em { font-style: italic; color: var(--gold-lt); }
+    .hero-title .nowrap { white-space: nowrap; }
+    .hero-lead {
+      font-size: clamp(.88rem, 1.5vw, 1.05rem);
+      color: rgba(255,255,255,.72);
+      line-height: 1.85;
+      max-width: 520px;
+      margin-bottom: 2.8rem;
+      font-weight: 300;
+    }
+    .hero-actions { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-block;
+      padding: .9rem 2.4rem;
+      background: var(--gold);
+      color: var(--dark);
+      font-size: .75rem;
+      font-weight: 500;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background .3s, transform .3s;
+    }
+    .btn-primary:hover { background: var(--gold-lt); transform: translateY(-2px); }
+    .btn-ghost {
+      display: inline-block;
+      padding: .9rem 2.4rem;
+      border: 1px solid rgba(255,255,255,.4);
+      color: rgba(255,255,255,.75);
+      font-size: .75rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: border-color .3s, color .3s;
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+    .hero-stats {
+      position: absolute; bottom: 3.5rem; right: 2.5rem; z-index: 2;
+      display: flex; gap: 2.5rem;
+    }
+    .hero-stat { text-align: right; }
+    .hero-stat-n {
+      display: block;
+      font-family: var(--sans);
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--white);
+      letter-spacing: .04em;
+      line-height: 1;
+    }
+    .hero-stat-l {
+      display: block;
+      font-size: .58rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.38);
+      margin-top: .45rem;
+    }
+    .hero-stat { border-left: 1px solid rgba(176,144,96,.3); padding-left: 1.4rem; text-align: left; }
+    .hero-scroll-ind {
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      z-index: 2; display: flex; flex-direction: column; align-items: center; gap: .5rem;
+    }
+    .hero-scroll-ind span { font-size: .58rem; letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.35); }
+    .hero-scroll-line { width: 1px; height: 36px; background: linear-gradient(to bottom, var(--gold), transparent); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+    /* ════════════════════════════════════════
+       TICKER
+    ════════════════════════════════════════ */
+    #ticker {
+      background: var(--gold);
+      overflow: hidden;
+      padding: .65rem 0;
+    }
+    .ticker-track {
+      display: flex; white-space: nowrap;
+      animation: ticker 30s linear infinite;
+    }
+    .ticker-item {
+      display: inline-flex; align-items: center; gap: 1.6rem;
+      padding-right: 4rem;
+      font-size: .68rem; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--dark); font-weight: 500;
+    }
+    .ticker-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--dark); opacity: .35; }
+    @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ════════════════════════════════════════
+       SECTION BASE
+    ════════════════════════════════════════ */
+    .sec-dark { background: var(--dark); }
+    .sec-light { background: var(--light); }
+    .sec-cream { background: var(--cream); }
+    section { padding: 7rem 0; }
+
+    /* ════════════════════════════════════════
+       FEATURE SPLIT (About-like)
+    ════════════════════════════════════════ */
+    #feature {
+      background: var(--cream);
+      padding: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 560px;
+    }
+    .feature-photo {
+      position: relative;
+      overflow: hidden;
+      min-height: 420px;
+      background: #fff;
+    }
+    .feature-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+      display: block;
+      transition: transform 1.2s cubic-bezier(0.22,1,0.36,1);
+    }
+    .feature-photo:hover img { transform: scale(1.03); }
+    .feature-copy {
+      padding: 6rem 4rem 6rem 5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: var(--cream);
+    }
+    .feature-copy .section-h2 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 300;
+      color: var(--ink);
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+    }
+    .feature-copy .section-h2 em { font-style: italic; color: var(--gold-dk); }
+    .feature-copy p {
+      font-size: .88rem;
+      color: var(--sub);
+      line-height: 1.9;
+      margin-bottom: 1.2rem;
+    }
+    .trust-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(176,144,96,.22);
+      margin-top: 2.5rem;
+      border: 1px solid rgba(176,144,96,.22);
+    }
+    .trust-item {
+      background: var(--cream);
+      padding: 1.4rem 1.2rem;
+      text-align: center;
+    }
+    .trust-num {
+      font-family: var(--sans);
+      font-size: .95rem;
+      font-weight: 500;
+      color: var(--gold-dk);
+      line-height: 1.4;
+      display: block;
+      letter-spacing: .04em;
+    }
+    .trust-lbl {
+      font-size: .62rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--sub);
+      margin-top: .4rem;
+      display: block;
+    }
+    .koshotsu-badge {
+      margin-top: 2rem;
+      padding: .9rem 1.2rem;
+      border: 1px solid rgba(176,144,96,.3);
+      background: var(--light2);
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .koshotsu-badge .icon { font-size: 1.4rem; }
+    .koshotsu-badge .text { font-size: .75rem; color: var(--sub); line-height: 1.6; }
+    .koshotsu-badge .text strong { display: block; color: var(--gold-dk); font-size: .65rem; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .2rem; font-weight: 500; }
+
+    /* ════════════════════════════════════════
+       REASONS (icon cards)
+    ════════════════════════════════════════ */
+    #reasons { background: var(--dark); padding: 7rem 0; }
+    .reasons-header { text-align: center; margin-bottom: 4.5rem; }
+    .reasons-header .section-h2 { color: var(--white); }
+    .reasons-header .section-h2 em { color: var(--gold-lt); font-family: var(--sans); font-style: normal; font-weight: 300; letter-spacing: .02em; }
+    .reasons-header .eyebrow { color: var(--gold); }
+    .section-h2 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--ink);
+    }
+    .section-h2 em { font-style: italic; color: var(--gold-dk); }
+    .reasons-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(176,144,96,.12);
+    }
+    .reason-card {
+      background: #1a1714;
+      padding: 3rem 2.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      transition: background .35s;
+    }
+    .reason-card:hover { background: #221f1b; }
+    .reason-icon {
+      width: 52px; height: 52px;
+      margin-bottom: 2rem;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+    .reason-num {
+      font-size: .6rem;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--gold-dk);
+      margin-bottom: 1rem;
+      display: block;
+      font-family: var(--sans);
+    }
+    .reason-title {
+      font-family: var(--serif);
+      font-size: 1.55rem;
+      font-weight: 400;
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: 1.2rem;
+    }
+    .reason-body {
+      font-size: .84rem;
+      color: rgba(255,255,255,.52);
+      line-height: 1.9;
+      flex: 1;
+    }
+    .reason-divider {
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--gold);
+      margin-bottom: 1.5rem;
+      opacity: .6;
+    }
+
+    /* ════════════════════════════════════════
+       INVENTORY
+    ════════════════════════════════════════ */
+    #inventory { background: var(--cream); padding: 7rem 0; }
+    .inv-header { margin-bottom: 3rem; }
+    .inv-header .section-h2 { margin-bottom: 0; }
+    .filter-bar {
+      display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 2rem; margin-bottom: 3rem;
+    }
+    .filter-btn {
+      padding: .4rem 1.1rem;
+      border: 1px solid rgba(26,24,20,.18);
+      background: transparent;
+      color: var(--sub);
+      font-family: var(--sans);
+      font-size: .68rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all .3s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--dark);
+    }
+    .inv-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--light2);
+    }
+    .prod-card {
+      background: var(--cream);
+      display: flex; flex-direction: column;
+      position: relative;
+      transition: box-shadow .3s;
+      overflow: hidden;
+    }
+    .prod-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.08); z-index: 2; }
+    .prod-card.hidden { display: none; }
+    .prod-thumb {
+      position: relative;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      background: #f8f7f5;
+    }
+    .prod-thumb img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      padding: .8rem;
+      transition: transform .8s var(--ease);
+    }
+    .prod-card:hover .prod-thumb img { transform: scale(1.04); }
+    .badge-urgent {
+      position: absolute; top: .8rem; left: .8rem;
+      background: #c94c4c;
+      color: #fff;
+      font-size: .6rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: .18rem .55rem;
+    }
+    .prod-info { padding: 1.4rem 1.5rem; flex: 1; display: flex; flex-direction: column; }
+    .prod-brand {
+      font-size: .62rem; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--gold-dk); margin-bottom: .4rem;
+    }
+    .prod-model {
+      font-family: var(--sans);
+      font-size: 1rem; font-weight: 500;
+      color: var(--ink); margin-bottom: .3rem;
+      letter-spacing: .04em;
+    }
+    .prod-title { font-size: .8rem; color: var(--sub); line-height: 1.5; margin-bottom: .3rem; }
+    .prod-desc { font-size: .72rem; color: var(--sub2); line-height: 1.55; }
+    .prod-footer {
+      padding: 1rem 1.5rem 1.4rem;
+      border-top: 1px solid var(--light2);
+      display: flex; align-items: flex-end; justify-content: space-between; gap: .5rem;
+    }
+    .prod-price-wrap .lbl { font-size: .6rem; letter-spacing: .08em; color: var(--sub); display: block; margin-bottom: .2rem; }
+    .prod-price { font-family: var(--sans); font-size: 1.35rem; font-weight: 500; color: var(--ink); line-height: 1.4; font-variant-numeric: tabular-nums; letter-spacing: 0; }
+    .prod-shipping { font-size: .65rem; color: var(--sub); margin-top: .25rem; }
+    .prod-time { text-align: right; }
+    .prod-time .lbl { font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; color: var(--sub); display: block; margin-bottom: .2rem; }
+    .countdown { font-family: var(--sans); font-size: .95rem; font-weight: 400; color: var(--ink); line-height: 1.4; font-variant-numeric: tabular-nums; letter-spacing: 0; }
+    .countdown.urgent { color: #c94c4c; font-weight: 500; }
+    .prod-link {
+      display: block;
+      margin: 0 1.5rem 1.4rem;
+      padding: .55rem;
+      text-align: center;
+      border: 1px solid var(--gold);
+      color: var(--gold-dk);
+      font-size: .68rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background .3s, color .3s;
+    }
+    .prod-link:hover { background: var(--gold); color: var(--dark); }
+
+    /* ════════════════════════════════════════
+       FAQ
+    ════════════════════════════════════════ */
+    #faq { background: var(--light); padding: 7rem 0; }
+    .faq-layout {
+      display: grid; grid-template-columns: 1fr 1.6fr; gap: 6rem; align-items: start;
+    }
+    .faq-sticky { position: sticky; top: 90px; }
+    .faq-sticky .section-h2 { color: var(--ink); }
+    .faq-lead { font-size: .88rem; color: var(--sub); line-height: 1.85; margin-top: 1rem; }
+    .faq-list { display: flex; flex-direction: column; }
+    .faq-item { border-bottom: 1px solid rgba(26,24,20,.1); }
+    .faq-q {
+      width: 100%; background: none; border: none;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.4rem 0;
+      font-family: var(--sans); font-size: .88rem; font-weight: 400;
+      color: var(--ink); text-align: left; cursor: pointer;
+      transition: color .3s;
+    }
+    .faq-q:hover { color: var(--gold-dk); }
+    .faq-icon {
+      width: 20px; height: 20px; flex-shrink: 0;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold); font-size: .75rem;
+      transition: background .3s, transform .3s;
+    }
+    .faq-item.open .faq-icon { background: var(--gold); color: var(--dark); transform: rotate(45deg); }
+    .faq-a {
+      max-height: 0; overflow: hidden;
+      transition: max-height .45s var(--ease);
+    }
+    .faq-item.open .faq-a { max-height: 300px; }
+    .faq-a-inner { padding: 0 0 1.4rem; font-size: .84rem; color: var(--sub); line-height: 1.9; }
+
+    /* ════════════════════════════════════════
+       CTA
+    ════════════════════════════════════════ */
+    #cta {
+      background: var(--dark);
+      padding: 8rem 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url('img/hero_bg.jpeg');
+      background-size: cover; background-position: center;
+      opacity: .15;
+    }
+    .cta-inner { position: relative; z-index: 1; max-width: 660px; margin: 0 auto; padding: 0 2rem; }
+    .cta-h2 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      font-weight: 300;
+      color: var(--white);
+      line-height: 1.15; margin-bottom: 1.2rem;
+    }
+    .cta-h2 em { font-style: italic; color: var(--gold-lt); }
+    .cta-p { font-size: .9rem; color: rgba(255,255,255,.55); line-height: 1.85; margin-bottom: 2.8rem; }
+    .cta-btns { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+
+    /* ════════════════════════════════════════
+       FOOTER
+    ════════════════════════════════════════ */
+    footer {
+      background: var(--nav);
+      border-top: 1px solid rgba(176,144,96,.15);
+      padding: 3.5rem 0 2rem;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 1fr auto; gap: 3rem; align-items: start;
+      margin-bottom: 2.5rem;
+    }
+    .footer-logo {
+      font-family: var(--serif); font-size: 1.2rem; font-weight: 500;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: var(--gold); text-decoration: none; display: block; margin-bottom: .6rem;
+    }
+    .footer-tag { font-size: .7rem; color: rgba(255,255,255,.25); letter-spacing: .1em; }
+    .footer-nav { display: flex; gap: 2rem; list-style: none; flex-wrap: wrap; justify-content: flex-end; }
+    .footer-nav a { font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.35); text-decoration: none; transition: color .3s; }
+    .footer-nav a:hover { color: var(--gold); }
+    .footer-copy {
+      padding-top: 1.5rem; border-top: 1px solid rgba(176,144,96,.1);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem;
+    }
+    .footer-copy p { font-size: .65rem; color: rgba(255,255,255,.2); letter-spacing: .06em; }
+
+    /* ════════════════════════════════════════
+       CONTACT FORM
+    ════════════════════════════════════════ */
+    #contact { background: var(--cream); padding: 7rem 0; }
+    .contact-layout {
+      display: grid; grid-template-columns: 1fr 1.6fr; gap: 6rem; align-items: start;
+    }
+    .contact-sticky { position: sticky; top: 90px; }
+    .contact-sticky .section-h2 { color: var(--ink); }
+    .contact-lead { font-size: .88rem; color: var(--sub); line-height: 1.85; margin-top: 1rem; }
+    .contact-note { font-size: .75rem; color: var(--sub); margin-top: 1.2rem; line-height: 1.8; }
+    .contact-note strong { color: var(--gold-dk); }
+    .contact-form { display: flex; flex-direction: column; gap: 1.4rem; }
+    .form-group { display: flex; flex-direction: column; gap: .4rem; }
+    .form-label {
+      font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--sub); font-family: var(--sans);
+    }
+    .form-label span { color: #c94c4c; margin-left: .2em; }
+    .form-input, .form-textarea {
+      background: var(--light);
+      border: 1px solid rgba(176,144,96,.22);
+      border-radius: 2px;
+      padding: .85rem 1rem;
+      font-family: var(--sans); font-size: .88rem; color: var(--ink);
+      transition: border-color .3s, box-shadow .3s;
+      outline: none;
+      width: 100%;
+    }
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(176,144,96,.1);
+    }
+    .form-textarea { resize: vertical; min-height: 140px; }
+    .form-submit {
+      align-self: flex-start;
+      background: var(--gold);
+      color: var(--dark);
+      border: none;
+      padding: .85rem 2.4rem;
+      font-family: var(--sans); font-size: .78rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
+      cursor: pointer;
+      transition: background .3s, transform .2s;
+      border-radius: 1px;
+    }
+    .form-submit:hover { background: var(--gold-dk); transform: translateY(-1px); }
+    .form-submit:active { transform: translateY(0); }
+    .form-success {
+      display: none;
+      background: rgba(176,144,96,.08);
+      border: 1px solid rgba(176,144,96,.3);
+      border-radius: 2px;
+      padding: 2rem;
+      text-align: center;
+      font-size: .88rem; color: var(--ink); line-height: 1.8;
+    }
+    .form-success strong { color: var(--gold-dk); display: block; margin-bottom: .5rem; font-size: 1rem; }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════════════ */
+    @media (max-width: 960px) {
+      #feature { grid-template-columns: 1fr; }
+      .feature-photo { min-height: 340px; }
+      .feature-copy { padding: 4rem 2.5rem; }
+      .reasons-grid { grid-template-columns: 1fr 1fr; }
+      .faq-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .faq-sticky { position: static; }
+      .inv-grid { grid-template-columns: 1fr 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-nav { justify-content: flex-start; }
+      .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .contact-sticky { position: static; }
+    }
+    @media (max-width: 600px) {
+      #nav { padding: 0 1.2rem; }
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex; flex-direction: column;
+        position: fixed; top: 60px; left: 0; right: 0;
+        background: var(--nav); padding: 2rem; z-index: 99;
+        border-bottom: 1px solid var(--gold-dim); gap: 1.4rem;
+      }
+      .nav-hamburger { display: flex; }
+      section { padding: 4.5rem 0; }
+      .reasons-grid { grid-template-columns: 1fr; }
+      .inv-grid { grid-template-columns: 1fr; }
+      .trust-row { grid-template-columns: 1fr; }
+      .hero-stats { display: none; }
+      .container { padding: 0 1.4rem; }
+      .cta-btns { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV ─────────────────────────────────── -->
+<nav id="nav">
+  <a href="#" class="nav-logo">Navi-Labo <em>｜ ナビラボ</em></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#feature">About</a></li>
+    <li><a href="#reasons">選ばれる理由</a></li>
+    <li><a href="#inventory">在庫一覧</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#contact">お問い合わせ</a></li>
+    <li><a class="nav-cta" href="https://auctions.yahoo.co.jp/seller/AG6JYKNcYAuXEaxSTT625GH6WDrt5" target="_blank" rel="noopener">ヤフオクで購入</a></li>
+  </ul>
+  <div class="nav-hamburger" id="hamburger" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO ────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-photo"></div>
+  <div class="hero-inner">
+    <div class="reveal">
+      <span class="hero-label">Car Navigation Specialists</span>
+    </div>
+    <h1 class="hero-title reveal d1">
+      中古でも、<span class="nowrap"><em>安心</em>を。</span><br>
+      プロが選ぶ一台。
+    </h1>
+    <p class="hero-lead reveal d2">
+      カロッツェリア・ケンウッドを中心に、全品出品前に動作確認を実施。
+      確かな品質のカーナビを、適正価格でお届けします。
+    </p>
+    <div class="hero-actions reveal d3">
+      <a href="#inventory" class="btn-primary">在庫一覧を見る</a>
+      <a href="https://auctions.yahoo.co.jp/seller/AG6JYKNcYAuXEaxSTT625GH6WDrt5" target="_blank" rel="noopener" class="btn-ghost">ヤフオクで購入</a>
+    </div>
+  </div>
+  <div class="hero-stats reveal d2">
+    <div class="hero-stat">
+      <span class="hero-stat-n">全品</span>
+      <span class="hero-stat-l">動作確認済</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-n">翌営業日</span>
+      <span class="hero-stat-l">スピード発送</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-n">古物商許可</span>
+      <span class="hero-stat-l">取得済み</span>
+    </div>
+  </div>
+  <div class="hero-scroll-ind">
+    <span>Scroll</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- TICKER ──────────────────────────────── -->
+<div id="ticker" aria-hidden="true">
+  <div class="ticker-track" id="tickerTrack"></div>
+</div>
+
+<!-- FEATURE / ABOUT ─────────────────────── -->
+<div id="feature">
+  <div class="feature-photo">
+    <img src="img/about_promise.jpeg" alt="カーナビ本体"
+         onerror="this.parentElement.style.background='#f0efed'">
+  </div>
+  <div class="feature-copy">
+    <span class="eyebrow reveal">Our Promise</span>
+    <h2 class="section-h2 reveal d1">
+      一台ずつ、<em>丁寧に</em>。<br>
+      だから安心して選べる。
+    </h2>
+    <hr class="gold-rule-left reveal d2">
+    <p class="reveal d2">
+      すべての商品は出品前に専門知識をもとに動作確認を実施しています。
+      画面の映り、音声、地図データ、各ボタン操作まで――
+      見えないところまで確かめた品質を、正直な価格でお届けします。
+    </p>
+    <p class="reveal d3">
+      カロッツェリア・ケンウッドの市販カーナビを専門に扱い、
+      個人のお客様から業者様まで幅広くご対応。
+      古物商許可を取得した、信頼できる専門店です。
+    </p>
+    <div class="trust-row reveal d3">
+      <div class="trust-item">
+        <span class="trust-num">全品</span>
+        <span class="trust-lbl">動作確認</span>
+      </div>
+      <div class="trust-item">
+        <span class="trust-num">翌日</span>
+        <span class="trust-lbl">発送対応</span>
+      </div>
+      <div class="trust-item">
+        <span class="trust-num">個人・業者</span>
+        <span class="trust-lbl">歓迎</span>
+      </div>
+    </div>
+    <div class="koshotsu-badge reveal d4">
+      <div class="icon">🏛️</div>
+      <div class="text">
+        <strong>古物商許可証</strong>
+        栃木県公安委員会許可　第411280001788号
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REASONS ─────────────────────────────── -->
+<section id="reasons">
+  <div class="container">
+    <div class="reasons-header reveal">
+      <span class="eyebrow">Why Choose Us</span>
+      <h2 class="section-h2">選ばれる、<em>3つの理由</em></h2>
+    </div>
+    <div class="reasons-grid" id="reasonsGrid">
+      <div class="reason-card reveal">
+        <svg class="reason-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="26" cy="26" r="20" stroke="currentColor" stroke-width="1.5"/>
+          <polyline points="17,27 23,33 35,20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="reason-divider"></span>
+        <span class="reason-num">01 — Full Inspection</span>
+        <h3 class="reason-title">全品、出品前に<br>動作確認済み</h3>
+        <p class="reason-body">画面・音声・地図データ・操作ボタンのすべてを専門知識で一台ずつ確認。状態の詳細は各出品ページに正直に記載しています。気になる点があればお気軽にご質問ください。</p>
+      </div>
+      <div class="reason-card reveal d1">
+        <svg class="reason-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="10" y="16" width="32" height="22" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M18 16V13a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3" stroke="currentColor" stroke-width="1.5"/>
+          <line x1="26" y1="24" x2="26" y2="32" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="22" y1="28" x2="30" y2="28" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <span class="reason-divider"></span>
+        <span class="reason-num">02 — Speed Delivery</span>
+        <h3 class="reason-title">ご入金後、<br>翌営業日以内発送</h3>
+        <p class="reason-body">ヤフオクのスピード発送バッジを取得。丁寧な梱包で迅速にお届けします。送料無料の商品も多数ご用意しており、お得に購入いただけます。</p>
+      </div>
+      <div class="reason-card reveal d2">
+        <svg class="reason-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M26 12 C18 12 12 18 12 26 C12 34 18 40 26 40 C34 40 40 34 40 26 C40 18 34 12 26 12Z" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M26 12 C26 12 20 20 20 26 C20 32 26 40 26 40" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M26 12 C26 12 32 20 32 26 C32 32 26 40 26 40" stroke="currentColor" stroke-width="1.2"/>
+          <line x1="13" y1="26" x2="39" y2="26" stroke="currentColor" stroke-width="1.2"/>
+          <line x1="15" y1="19" x2="37" y2="19" stroke="currentColor" stroke-width="1.2"/>
+          <line x1="15" y1="33" x2="37" y2="33" stroke="currentColor" stroke-width="1.2"/>
+        </svg>
+        <span class="reason-divider"></span>
+        <span class="reason-num">03 — For Everyone</span>
+        <h3 class="reason-title">個人も業者も、<br>まとめ買い歓迎</h3>
+        <p class="reason-body">古物商許可（栃木県公安委員会 第411280001788号）を取得した信頼できる専門店。業者様のまとめ仕入れや、個人様の一台探しまで、ヤフオクのメッセージよりお気軽にどうぞ。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INVENTORY ───────────────────────────── -->
+<section id="inventory">
+  <div class="container">
+    <div class="inv-header reveal">
+      <span class="eyebrow">Current Listings</span>
+      <h2 class="section-h2">在庫一覧</h2>
+    </div>
+    <div class="filter-bar reveal d1" id="filterBar">
+      <button class="filter-btn active" data-filter="all">すべて</button>
+      <button class="filter-btn" data-filter="carrozzeria">カロッツェリア</button>
+      <button class="filter-btn" data-filter="kenwood">ケンウッド</button>
+      <button class="filter-btn" data-filter="urgent">終了間近</button>
+    </div>
+    <div class="inv-grid" id="invGrid"></div>
+  </div>
+</section>
+
+<!-- FAQ ─────────────────────────────────── -->
+<section id="faq">
+  <div class="container">
+    <div class="faq-layout">
+      <div class="faq-sticky reveal">
+        <span class="eyebrow">FAQ</span>
+        <h2 class="section-h2">よくある<br><em>ご質問</em></h2>
+        <hr class="gold-rule-left">
+        <p class="faq-lead">
+          ご不明な点はヤフオクの質問欄からいつでもお気軽にどうぞ。
+          迅速にお答えします。
+        </p>
+        <a href="https://auctions.yahoo.co.jp/seller/AG6JYKNcYAuXEaxSTT625GH6WDrt5"
+           target="_blank" rel="noopener"
+           class="btn-primary" style="margin-top:2rem;display:inline-block;font-size:.72rem;padding:.75rem 1.8rem;">
+          出品一覧を見る
+        </a>
+      </div>
+      <div class="reveal d1">
+        <div class="faq-list" id="faqList"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT ─────────────────────────────── -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-layout">
+      <div class="contact-sticky reveal">
+        <span class="eyebrow">Contact</span>
+        <h2 class="section-h2">お問い合わせ</h2>
+        <hr class="gold-rule-left">
+        <p class="contact-lead">業者様のまとめ買いや商品のご質問など、お気軽にどうぞ。通常1営業日以内にご返信いたします。</p>
+        <p class="contact-note">
+          <strong>お急ぎの方へ</strong><br>
+          ヤフオクの質問欄からもお問い合わせいただけます。落札前のご質問も歓迎です。
+        </p>
+      </div>
+      <div class="reveal d1">
+        <div class="form-success" id="formSuccess">
+          <strong>お問い合わせを受け付けました</strong>
+          内容を確認の上、1営業日以内にご返信いたします。<br>しばらくお待ちください。
+        </div>
+        <form class="contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="contactForm">
+          <input type="hidden" name="form-name" value="contact">
+          <p style="display:none"><label>Bot field: <input name="bot-field"></label></p>
+          <div class="form-group">
+            <label class="form-label" for="cf-name">お名前 <span>*</span></label>
+            <input class="form-input" type="text" id="cf-name" name="name" required placeholder="山田 太郎">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cf-email">メールアドレス <span>*</span></label>
+            <input class="form-input" type="email" id="cf-email" name="email" required placeholder="example@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cf-subject">件名</label>
+            <input class="form-input" type="text" id="cf-subject" name="subject" placeholder="商品についてのご質問">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cf-message">メッセージ <span>*</span></label>
+            <textarea class="form-textarea" id="cf-message" name="message" required placeholder="ご質問・ご要望をご記入ください"></textarea>
+          </div>
+          <button class="form-submit" type="submit">送信する</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA ─────────────────────────────────── -->
+<section id="cta">
+  <div class="cta-inner">
+    <span class="eyebrow reveal" style="color:var(--gold-lt)">Yahoo Auctions</span>
+    <h2 class="cta-h2 reveal d1">
+      気になる一台は、<br><em>今すぐ</em>チェック。
+    </h2>
+    <p class="cta-p reveal d2">
+      最新の出品状況・即決価格・動作確認の詳細はヤフオク出品ページでご確認ください。
+      業者様のまとめ買いはメッセージにてご相談ください。
+    </p>
+    <div class="cta-btns reveal d3">
+      <a href="https://auctions.yahoo.co.jp/seller/AG6JYKNcYAuXEaxSTT625GH6WDrt5"
+         target="_blank" rel="noopener" class="btn-primary">
+        ヤフオク出品一覧を見る
+      </a>
+      <a href="#inventory" class="btn-ghost">在庫をすべて見る</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER ──────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a href="#" class="footer-logo">Navi-Labo</a>
+        <p class="footer-tag">カーナビ専門店 — カロッツェリア・ケンウッド専門</p>
+      </div>
+      <ul class="footer-nav">
+        <li><a href="#feature">About</a></li>
+        <li><a href="#reasons">選ばれる理由</a></li>
+        <li><a href="#inventory">在庫一覧</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="https://auctions.yahoo.co.jp/seller/AG6JYKNcYAuXEaxSTT625GH6WDrt5" target="_blank">ヤフオク</a></li>
+      </ul>
+    </div>
+    <div class="footer-copy">
+      <p>© 2026 Navi-Labo｜ナビラボ. All rights reserved.</p>
+      <p>古物商許可：栃木県公安委員会許可 第411280001788号</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── PRODUCT DATA ───────────────────────── */
+const SELLER = 'https://auctions.yahoo.co.jp/seller/AG6JYKNcYAuXEaxSTT625GH6WDrt5';
+const aurl = id => `https://page.auctions.yahoo.co.jp/jp/auction/${id}`;
+const now = Date.now();
+const h = n => n * 3600000;
+const d = n => n * 86400000;
+
+const products = [
+  { id:'g1224902488', brand:'carrozzeria', bl:'Carrozzeria', model:'AVIC-CZ901', title:'サイバーナビ 180mm 2025年最新地図', desc:'ハイレゾ / フルセグ / BT / 新品アンテナ', price:'47,000', pl:'即決', ship:'送料無料', ends:now+h(48), img:'https://auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0204/user/6c849ca1f30b677aa147a75dc84736a20207fe3d4e8c19e9e469a3a198fc5543/i-img600x450-17749905512990x6mx0t574.jpg', tags:['carrozzeria'] },
+  { id:'d1224910521', brand:'carrozzeria', bl:'Carrozzeria', model:'AVIC-CZ902', title:'サイバーナビ専用配線 2025年最新地図', desc:'高音質 / フルセグ / 録音 / 完動品', price:'50,000', pl:'即決', ship:'送料無料', ends:now+h(48), img:'https://auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0204/user/6c849ca1f30b677aa147a75dc84736a20207fe3d4e8c19e9e469a3a198fc5543/i-img600x450-17749908516215astolj28.jpg', tags:['carrozzeria'] },
+  { id:'q1224482002', brand:'carrozzeria', bl:'Carrozzeria', model:'AVIC-RW710', title:'楽ナビ 200mmワイド 2025年11月地図', desc:'高画質 / ハイレゾ / フルセグ / 新品アンテナ', price:'37,500', pl:'即決', ship:'送料無料', ends:now+h(13), img:'https://auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0203/user/6c849ca1f30b677aa147a75dc84736a20207fe3d4e8c19e9e469a3a198fc5543/i-img600x450-17746562417475apcu5n36.jpg', tags:['carrozzeria','urgent'] },
+  { id:'q1224473341', brand:'carrozzeria', bl:'Carrozzeria', model:'AVIC-RW810-D', title:'楽ナビ 200mmワイド 完動品', desc:'高画質HDパネル / フルセグ / BT / HDMI', price:'40,000', pl:'即決', ship:'送料無料', ends:now+d(5), img:'https://auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0203/user/6c849ca1f30b677aa147a75dc84736a20207fe3d4e8c19e9e469a3a198fc5543/i-img600x450-177465683955154daywg36.jpg', tags:['carrozzeria'] },
+  { id:'k1224896891', brand:'carrozzeria', bl:'Carrozzeria', model:'AVIC-CZ901', title:'サイバーナビ 180mm 2025年最新地図', desc:'ハイレゾ / フルセグ / BT / 新品アンテナ', price:'45,000', pl:'即決', ship:'送料無料', ends:now+h(48), img:'https://auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0204/user/6c849ca1f30b677aa147a75dc84736a20207fe3d4e8c19e9e469a3a198fc5543/i-img600x450-177499071649914ay9bx35.jpg', tags:['carrozzeria'] },
+  { id:'1224761109', brand:'kenwood', bl:'KENWOOD', model:'MDV-M906HDW', title:'彩速ナビ 200mmワイド 2025年最新地図', desc:'高画質 / フルセグ / BT / 録音 / トヨタ配線', price:'38,000', pl:'即決', ship:'送料無料', ends:now+h(24), img:'https://auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0203/user/6c849ca1f30b677aa147a75dc84736a20207fe3d4e8c19e9e469a3a198fc5543/i-img600x450-17748770793923uztebe34.jpg', tags:['kenwood'] },
+  { id:'p1224899397', brand:'carrozzeria', bl:'Carrozzeria', model:'AVIC-CW910-DC', title:'サイバーナビ 200mmワイド 2026年3月最新地図', desc:'最高峰 / 高画質HD / ハイレゾ / 完動品', price:'63,000', pl:'即決', ship:'送料無料', ends:now+h(48), img:'https://auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0204/user/6c849ca1f30b677aa147a75dc84736a20207fe3d4e8c19e9e469a3a198fc5543/i-img600x450-17749903436272fxbhhq34.jpg', tags:['carrozzeria'] },
+  { id:'q1224757548', brand:'kenwood', bl:'KENWOOD', model:'MDV-M906HDW', title:'彩速ナビ 200mmワイド 2025年最新地図', desc:'高音質 / ハイレゾ / フルセグ / DVD / 新品アンテナ', price:'40,000', pl:'即決', ship:'送料無料', ends:now+h(24), img:'https://auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0203/user/6c849ca1f30b677aa147a75dc84736a20207fe3d4e8c19e9e469a3a198fc5543/i-img600x450-17748774913447gdrzqs569.jpg', tags:['kenwood'] },
+  { id:'v1222186586', brand:'carrozzeria', bl:'Carrozzeria', model:'AVIC-CW900', title:'サイバーナビ 200mmワイド 訳あり 本体のみ', desc:'2025年11月地図 / 最高峰 / 高画質', price:'18,000', pl:'現在', ship:'+送料980円', ends:now+h(16), img:'https://auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0203/user/6c849ca1f30b677aa147a75dc84736a20207fe3d4e8c19e9e469a3a198fc5543/i-img600x450-17729555975050sxwy0q267160.jpg', tags:['carrozzeria','urgent'] },
+  { id:'f1223766701', brand:'carrozzeria', bl:'Carrozzeria', model:'AVIC-CW911', title:'サイバーナビ 200mmワイド 2025年11月地図', desc:'最高峰 / 高画質 / ハイレゾ / フルセグ / カメラ付', price:'65,000', pl:'即決', ship:'送料無料', ends:now+d(6), img:'https://auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0203/user/6c849ca1f30b677aa147a75dc84736a20207fe3d4e8c19e9e469a3a198fc5543/i-img600x450-17741329071814bux2od42313.jpg', tags:['carrozzeria'] },
+  { id:'v1224908963', brand:'carrozzeria', bl:'Carrozzeria', model:'AVIC-CQ911-DC', title:'サイバーナビ 9V型大画面 2026年3月最新地図', desc:'最高峰 / 高画質HD / ハイレゾ / 完動品', price:'82,000', pl:'即決', ship:'送料無料', ends:now+h(48), img:'https://auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0204/user/6c849ca1f30b677aa147a75dc84736a20207fe3d4e8c19e9e469a3a198fc5543/i-img600x450-17749901445452we3y5z32.jpg', tags:['carrozzeria'] },
+  { id:'m1223022753', brand:'carrozzeria', bl:'Carrozzeria', model:'AVIC-CL901', title:'カロッツェリア 8インチ 完動品', desc:'2025年11月地図 / ハイレゾ / 高音質 / スマートコマンダー', price:'62,000', pl:'即決', ship:'送料無料', ends:now+h(14), img:'https://auctions.c.yimg.jp/images.auctions.yahoo.co.jp/image/dr000/auc0203/user/6c849ca1f30b677aa147a75dc84736a20207fe3d4e8c19e9e469a3a198fc5543/i-img600x450-17735717003948p6ao4o35.jpg', tags:['carrozzeria','urgent'] },
+  { id:null, brand:'kenwood', bl:'KENWOOD', model:'MDV-M907HDF', title:'彩速ナビ 9インチ フローティング', desc:'高画質HD / ハイレゾ / 汎用配線 / 新品アンテナ / 完動品', price:'83,000', pl:'即決', ship:'送料無料', ends:now+h(24), img:'img/card_907HDF.jpg', tags:['kenwood'] },
+  { id:null, brand:'carrozzeria', bl:'Carrozzeria', model:'AVIC-RZ710', title:'楽ナビ 180mm 2025年11月版', desc:'高画質HDパネル / HDMI / BT / 新品フィルム付', price:'38,000', pl:'即決', ship:'+送料980円', ends:now+h(24), img:'img/card_RW710.jpg', tags:['carrozzeria'] },
+  { id:null, brand:'carrozzeria', bl:'Carrozzeria', model:'AVIC-RW711-E', title:'楽ナビ 200mmワイド 2025年11月地図', desc:'高画質 / 高音質 / フルセグ / HDMI / 新品アンテナ', price:'40,000', pl:'即決', ship:'送料無料', ends:now+d(5), img:'img/card_RW711E_a.jpg', tags:['carrozzeria'] },
+  { id:null, brand:'carrozzeria', bl:'Carrozzeria', model:'AVIC-CL901', title:'カロッツェリア 8インチ 完動品', desc:'最新2025年11月地図 / ハイレゾ / 高音質 / コマンダー付', price:'62,000', pl:'即決', ship:'送料無料', ends:now+h(16), img:'img/card_CQ911.jpg', tags:['carrozzeria','urgent'] },
+  { id:null, brand:'kenwood', bl:'KENWOOD', model:'MDV-M906HDW', title:'彩速ナビ 200mmワイド 2025年最新地図', desc:'高音質 / ハイレゾ / フルセグ / DVD / 新品アンテナ', price:'40,000', pl:'即決', ship:'送料無料', ends:now+h(24), img:'img/card_M906HDW_c.jpg', tags:['kenwood'] },
+  { id:null, brand:'other', bl:'Parts', model:'配線セット', title:'取り付け配線 詰め合わせセット', desc:'トヨタ/ダイハツ / ホンダ / スズキ / 変換ハーネス / DIY向け', price:'1,500', pl:'即決', ship:'+送料230円', ends:now+h(12), img:'', tags:['other','urgent'] },
+];
+
+/* ── FAQ DATA ────────────────────────────── */
+const faqs = [
+  { q:'動作確認はしていますか？', a:'全商品、出品前に専門知識をもとに動作確認を実施しております。画面・音声・地図データ・ボタン操作などの確認内容は各出品ページに詳しく記載しています。安心してご入札ください。' },
+  { q:'送料はいくらかかりますか？', a:'商品によって異なります。各出品ページに送料を明記しております。送料無料の商品も多数ございます。' },
+  { q:'発送はどのくらいかかりますか？', a:'ご入金確認後、基本的に翌営業日以内にご発送いたします。スピード発送バッジを取得済みですので、迅速な対応が可能です。' },
+  { q:'業者（まとめ買い）での購入は可能ですか？', a:'業者様のまとめ買いも大歓迎です。ヤフオクのメッセージ機能よりお気軽にご相談ください。在庫状況や価格についてご対応いたします。' },
+  { q:'返品・返金は対応していますか？', a:'出品ページの説明と著しく異なる場合はご対応いたします。商品到着後、すぐにご連絡ください。状況を確認の上、誠実に対応いたします。' },
+  { q:'付属品について教えてください。', a:'配線等の付属品の有無は各出品ページに明記しております。ご不明な点がございましたら、落札前にヤフオクの質問欄よりお気軽にお問い合わせください。' },
+];
+
+/* ── TICKER BUILD ────────────────────────── */
+(function() {
+  const items = ['全品動作確認済み','スピード発送','古物商許可 第411280001788号','カロッツェリア専門','ケンウッド専門','個人・業者歓迎','送料無料多数','栃木県公安委員会許可','中古でも安心'];
+  const t = document.getElementById('tickerTrack');
+  [...items,...items].forEach(s => {
+    const el = document.createElement('span');
+    el.className = 'ticker-item';
+    el.innerHTML = s + '<span class="ticker-sep"></span>';
+    t.appendChild(el);
+  });
+})();
+
+/* ── COUNTDOWN ───────────────────────────── */
+function fmt(ends) {
+  const r = ends - Date.now();
+  if (r <= 0) return { txt:'終了', urgent:false };
+  const s = Math.floor(r/1000);
+  const dd = Math.floor(s/86400), hh = Math.floor((s%86400)/3600), mm = Math.floor((s%3600)/60), ss = s%60;
+  const urgent = r < 86400000;
+  const txt = dd > 0 ? `${dd}日 ${hh}時間` : `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  return { txt, urgent };
+}
+
+/* ── RENDER INVENTORY ────────────────────── */
+function renderInv() {
+  const grid = document.getElementById('invGrid');
+  grid.innerHTML = '';
+  products.filter(p => p.id).forEach((p,i) => {
+    const { txt, urgent } = fmt(p.ends);
+    const link = p.id ? aurl(p.id) : SELLER;
+    const delay = ['','d1','d2'][i%3];
+    const card = document.createElement('div');
+    card.className = `prod-card reveal ${delay}`;
+    card.dataset.tags = p.tags.join(',');
+    card.innerHTML = `
+      <div class="prod-thumb">
+        ${p.img ? `<img src="${p.img}" alt="${p.model}" loading="lazy" onerror="this.parentElement.style.background='#e8e6e2'">` : `<div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#b09060">🔌</div>`}
+        ${urgent ? '<div class="badge-urgent">終了間近</div>' : ''}
+      </div>
+      <div class="prod-info">
+        <div class="prod-brand">${p.bl}</div>
+        <div class="prod-model">${p.model}</div>
+        <div class="prod-title">${p.title}</div>
+        <div class="prod-desc">${p.desc}</div>
+      </div>
+      <div class="prod-footer">
+        <div class="prod-price-wrap">
+          <span class="lbl">${p.pl}価格</span>
+          <div class="prod-price">¥${p.price}</div>
+          <div class="prod-shipping">${p.ship}</div>
+        </div>
+        <div class="prod-time">
+          <span class="lbl">残り時間</span>
+          <div class="countdown${urgent?' urgent':''}" data-ends="${p.ends}">${txt}</div>
+        </div>
+      </div>
+      <a href="${link}" target="_blank" rel="noopener" class="prod-link">
+        ${p.id ? 'オークションページへ →' : '出品一覧を見る →'}
+      </a>`;
+    grid.appendChild(card);
+  });
+  observeReveal();
+}
+
+/* ── FILTER ──────────────────────────────── */
+document.getElementById('filterBar').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const f = btn.dataset.filter;
+  document.querySelectorAll('.prod-card').forEach(c => {
+    const tags = (c.dataset.tags||'').split(',');
+    c.classList.toggle('hidden', f !== 'all' && !tags.includes(f));
+  });
+});
+
+/* ── COUNTDOWN TICK ──────────────────────── */
+setInterval(() => {
+  document.querySelectorAll('.countdown[data-ends]').forEach(el => {
+    const { txt, urgent } = fmt(+el.dataset.ends);
+    el.textContent = txt;
+    el.className = 'countdown' + (urgent ? ' urgent' : '');
+  });
+}, 1000);
+
+/* ── FAQ BUILD ───────────────────────────── */
+(function() {
+  const list = document.getElementById('faqList');
+  faqs.forEach((f, i) => {
+    const item = document.createElement('div');
+    item.className = 'faq-item reveal' + (i%2?' d1':'');
+    item.innerHTML = `
+      <button class="faq-q">
+        <span>Q${i+1}. ${f.q}</span>
+        <span class="faq-icon">＋</span>
+      </button>
+      <div class="faq-a"><div class="faq-a-inner">${f.a}</div></div>`;
+    item.querySelector('.faq-q').addEventListener('click', () => {
+      const open = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
+      if (!open) item.classList.add('open');
+    });
+    list.appendChild(item);
+  });
+})();
+
+/* ── INTERSECTION OBSERVER ───────────────── */
+function observeReveal() {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }});
+  }, { threshold: .08, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el => io.observe(el));
+}
+
+/* ── HAMBURGER ───────────────────────────── */
+function toggleNav() {
+  document.getElementById('navLinks').classList.toggle('open');
+}
+
+/* ── CONTACT FORM ────────────────────────── */
+(function() {
+  const form = document.getElementById('contactForm');
+  if (!form) return;
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = form.querySelector('.form-submit');
+    btn.disabled = true;
+    btn.textContent = '送信中...';
+    try {
+      const data = new FormData(form);
+      await fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(data).toString() });
+      form.style.display = 'none';
+      document.getElementById('formSuccess').style.display = 'block';
+    } catch {
+      btn.disabled = false;
+      btn.textContent = '送信する';
+      alert('送信に失敗しました。時間をおいて再度お試しください。');
+    }
+  });
+})();
+
+/* ── INIT ────────────────────────────────── */
+renderInv();
+observeReveal();
+// Hero elements: trigger immediately
+document.querySelectorAll('#hero .reveal').forEach((el,i) => {
+  setTimeout(() => el.classList.add('visible'), 250 + i*160);
+});
+</script>
+</body>
+</html>
