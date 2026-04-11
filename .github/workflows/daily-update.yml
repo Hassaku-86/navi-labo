@@ -23,7 +23,7 @@ jobs:
           node-version: '20'
 
       - name: 依存パッケージのインストール
-        run: npm ci
+        run: npm install
 
       - name: ヤフオク商品一覧を取得して更新
         run: node scripts/update-listings.mjs
