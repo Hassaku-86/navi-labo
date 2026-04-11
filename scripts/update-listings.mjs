@@ -71,41 +71,34 @@ function brandLabel(brand) {
  */
 function parseNextData(data) {
   if (!data) return [];
-  const props = data?.props?.pageProps;
 
-  // Yahoo AuctionsのNext.jsデータ構造を探索
-  const candidates = [
-    props?.initialState?.auction?.auctionList,
-    props?.dehydratedState?.queries?.[0]?.state?.data?.pages?.[0]?.data,
-    props?.items,
-    props?.auctionItems,
-  ];
+  // 正しいパス: props.pageProps.initialState.search.items.listing.items
+  const listing = data?.props?.pageProps?.initialState?.search?.items?.listing;
+  const items = listing?.items;
 
-  for (const list of candidates) {
-    if (Array.isArray(list) && list.length > 0) {
-      return list.map(item => mapItem(item)).filter(Boolean);
-    }
+  if (Array.isArray(items) && items.length > 0) {
+    return items.map(item => mapItem(item)).filter(Boolean);
   }
   return [];
 }
 
 function mapItem(item) {
   if (!item) return null;
-  const id = item.auctionId || item.auction_id || extractAuctionId(item.url || item.auctionUrl || '');
+  const id = item.auctionId || extractAuctionId(item.url || '');
   if (!id) return null;
 
-  const title = item.title || item.name || '';
+  const title = item.title || '';
   const brand = detectBrand(title);
-  const rawPrice = item.price || item.currentPrice || item.buyItNowPrice || 0;
+
+  // buyNowPrice（即決価格）があれば即決、なければ現在価格
+  const rawPrice = item.buyNowPrice || item.price || 0;
   const price = typeof rawPrice === 'number' ? rawPrice.toLocaleString('ja-JP') : String(rawPrice).replace(/[^0-9,]/g, '');
+  const pl = item.buyNowPrice ? '即決' : '現在';
 
-  const img = item.thumbnail?.url || item.thumbnail || item.imageUrl || item.image || '';
+  const img = item.imageUrl || '';
   const endTime = item.endTime
-    ? (typeof item.endTime === 'number' ? item.endTime * 1000 : new Date(item.endTime).getTime())
+    ? new Date(item.endTime).getTime()
     : Date.now() + 48 * 3600000;
-
-  const isBuyNow = !!(item.buyItNowPrice || item.isInstantPurchase);
-  const pl = isBuyNow ? '即決' : '現在';
 
   return { id, brand, bl: brandLabel(brand), title, price, pl, img, ends: endTime, tags: [brand] };
 }
