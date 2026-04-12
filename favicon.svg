@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="16" fill="#0f172a"/>
+  <!-- Navigation arrow pointing up-right (compass style) -->
+  <polygon points="16,5 21,21 16,18 11,21" fill="#3b82f6"/>
+  <polygon points="16,27 11,11 16,14 21,11" fill="#64748b"/>
+  <!-- Center dot -->
+  <circle cx="16" cy="16" r="2" fill="#ffffff"/>
+</svg>
