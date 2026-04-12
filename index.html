@@ -4,6 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Navi-Labo｜ナビラボ — カーナビ専門店</title>
+  <meta name="description" content="カーナビ専門の中古・整備品ショップ。CarrozzeriaやKENWOODの高品質ナビを厳選してご提供。最新地図・完動品のみ。送料無料。">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://navi-labo.hassaku-works.com/">
+
+  <!-- OGP / SNSシェア -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Navi-Labo｜ナビラボ — カーナビ専門店">
+  <meta property="og:description" content="CarrozzeriaやKENWOODの高品質カーナビを厳選販売。最新地図・完動品のみ、送料無料。">
+  <meta property="og:url" content="https://navi-labo.hassaku-works.com/">
+  <meta property="og:site_name" content="Navi-Labo｜ナビラボ">
+  <meta property="og:locale" content="ja_JP">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Navi-Labo｜ナビラボ — カーナビ専門店">
+  <meta name="twitter:description" content="CarrozzeriaやKENWOODの高品質カーナビを厳選販売。最新地図・完動品のみ、送料無料。">
+
+  <!-- 構造化データ（LocalBusiness） -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "name": "Navi-Labo｜ナビラボ",
+    "description": "CarrozzeriaやKENWOODの高品質カーナビを厳選販売。最新地図・完動品のみ、送料無料。",
+    "url": "https://navi-labo.hassaku-works.com/",
+    "email": "katsuya.tsurumi@hassaku-works.com",
+    "priceRange": "¥¥",
+    "currenciesAccepted": "JPY",
+    "paymentAccepted": "Credit Card",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "カーナビ一覧"
+    }
+  }
+  </script>
+
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -1098,7 +1132,7 @@ function renderInv() {
     card.dataset.tags = p.tags.join(',');
     card.innerHTML = `
       <div class="prod-thumb">
-        ${p.img ? `<img src="${p.img}" alt="${p.model}" loading="lazy" onerror="this.parentElement.style.background='#e8e6e2'">` : `<div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#b09060">🔌</div>`}
+        ${p.img ? `<img src="${p.img}" alt="${p.title || p.model || 'カーナビ'}" loading="lazy" onerror="this.parentElement.style.background='#e8e6e2'">` : `<div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#b09060">🔌</div>`}
         ${urgent ? '<div class="badge-urgent">終了間近</div>' : ''}
       </div>
       <div class="prod-info">
