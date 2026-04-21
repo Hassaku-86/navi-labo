@@ -1,0 +1,6 @@
+node_modules/
+package-lock.json
+.DS_Store
+*.skill
+家計簿転記ツール.html
+scripts/gen-favicon.mjs
