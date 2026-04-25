@@ -12,28 +12,54 @@ const ROOT = join(__dirname, '..');
 const SELLER_ID = 'AG6JYKNcYAuXEaxSTT625GH6WDrt5';
 const SELLER_URL = `https://auctions.yahoo.co.jp/seller/${SELLER_ID}`;
 
-const HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-  'Accept-Language': 'ja,en-US;q=0.7,en;q=0.3',
-  'Accept-Encoding': 'gzip, deflate, br',
-  'Connection': 'keep-alive',
-};
+// 複数のUser-Agentをローテーションして検出回避
+const UA_LIST = [
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15',
+];
+
+function makeHeaders(uaIndex = 0) {
+  return {
+    'User-Agent': UA_LIST[uaIndex % UA_LIST.length],
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    'Accept-Language': 'ja,en-US;q=0.7,en;q=0.3',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Connection': 'keep-alive',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+    'Sec-Fetch-Dest': 'document',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-Site': 'none',
+    'Upgrade-Insecure-Requests': '1',
+  };
+}
 
 async function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
 }
 
-async function fetchPage(url, retries = 3) {
+async function fetchPage(url, retries = 4) {
   for (let i = 0; i < retries; i++) {
     try {
-      const res = await fetch(url, { headers: HEADERS });
-      if (res.ok) return await res.text();
-      console.warn(`HTTP ${res.status} for ${url} (attempt ${i + 1})`);
+      const headers = makeHeaders(i);
+      console.log(`[attempt ${i + 1}] UA: ${headers['User-Agent'].substring(0, 50)}...`);
+      const res = await fetch(url, { headers });
+      console.log(`[attempt ${i + 1}] HTTP ${res.status} (${res.headers.get('content-type') || 'unknown type'})`);
+      if (res.ok) {
+        const html = await res.text();
+        console.log(`[attempt ${i + 1}] HTML length: ${html.length} chars`);
+        // __NEXT_DATA__ が含まれているか確認
+        if (html.includes('__NEXT_DATA__')) return html;
+        console.warn(`[attempt ${i + 1}] __NEXT_DATA__ not found in response (may be blocked). Length: ${html.length}`);
+      } else {
+        console.warn(`[attempt ${i + 1}] HTTP ${res.status} for ${url}`);
+      }
     } catch (e) {
-      console.warn(`Fetch error (attempt ${i + 1}): ${e.message}`);
+      console.warn(`[attempt ${i + 1}] Fetch error: ${e.message}`);
     }
-    if (i < retries - 1) await sleep(2000 * (i + 1));
+    if (i < retries - 1) await sleep(3000 * (i + 1));
   }
   return null;
 }
